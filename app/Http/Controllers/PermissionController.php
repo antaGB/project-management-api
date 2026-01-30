@@ -3,16 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Permission;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\PermissionResource;
 
 class PermissionController extends Controller
 {
+    use ApiResponse;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $permissions = Permission::all();
+        return PermissionResource::collection($permissions);
     }
 
     /**
@@ -20,7 +25,8 @@ class PermissionController extends Controller
      */
     public function create()
     {
-        //
+        $permission = Permission::create($request->validated());
+        return $this->success(new PermissionResource($permission), 'Permission created', 201);
     }
 
     /**
@@ -60,6 +66,7 @@ class PermissionController extends Controller
      */
     public function destroy(Permission $permission)
     {
-        //
+        $permission->delete();
+        return $this->success(null, 'Permission deleted');
     }
 }
