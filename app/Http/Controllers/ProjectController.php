@@ -3,16 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Http\Resources\ProjectResource;
+use App\Traits\ApiResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
+    use ApiResponse, AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $projects = Project::withCount('tasks')->paginate(10);
+        return ProjectResource::collection($projects);
     }
 
     /**
@@ -28,7 +34,8 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $project = Project::create($request->validated());
+        return $this->success(new ProjectResource($project), 'Proyek berhasil dibuat', 201);
     }
 
     /**
@@ -36,7 +43,10 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        //
+        return $this->success(
+            new ProjectResource($project->load('tasks.assignee')), 
+            'Detail proyek ditemukan'
+        );
     }
 
     /**
@@ -52,7 +62,10 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-        //
+        $this->authorize('update', $project);
+
+        $project->update($request->validated());
+        return $this->success(new ProjectResource($project), 'Proyek berhasil diperbarui');
     }
 
     /**
@@ -60,6 +73,9 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        $this->authorize('delete', $project);
+
+        $project->delete();
+        return $this->success(null, 'Proyek berhasil dihapus');
     }
 }
