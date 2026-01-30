@@ -25,8 +25,7 @@ class PermissionController extends Controller
      */
     public function create()
     {
-        $permission = Permission::create($request->validated());
-        return $this->success(new PermissionResource($permission), 'Permission created', 201);
+        //
     }
 
     /**
@@ -34,7 +33,8 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $permission = Permission::create($request->validated());
+        return $this->success(new PermissionResource($permission), 'Permission created', 201);
     }
 
     /**
