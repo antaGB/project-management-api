@@ -3,16 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Role;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\RoleResource;
 
 class RoleController extends Controller
 {
+    use ApiResponse;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return RoleResource::collection(Role::with('permissions')->get());
     }
 
     /**
@@ -28,7 +32,19 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $role = Role::create($request->validated());
+        return $this->success(new RoleResource($role), 'Role berhasil dibuat', 201);
+    }
+
+    /**
+     * Grant permission to role.
+     */
+
+    public function givePermission(Request $request, Role $role) {
+        $request->validate(['permission_ids' => 'required|array|exists:permissions,id']);
+        
+        $role->permissions()->sync($request->permission_ids);
+        return $this->success(new RoleResource($role->load('permissions')), 'Permissions berhasil diperbarui');
     }
 
     /**
