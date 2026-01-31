@@ -15,10 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->enum('status', ['not started', 'in progress', 'completed', 'canceled'])->default('not started');
             $table->timestamps();
-
-            $table->index('status');
         });
     }
 

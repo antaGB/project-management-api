@@ -6,7 +6,8 @@ use App\Models\Project;
 use App\Http\Resources\ProjectResource;
 use App\Traits\ApiResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use App\Http\Requests\StoreProjectRequest as ProjectRequest;
 
 class ProjectController extends Controller
 {
@@ -32,7 +33,7 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProjectRequest $request)
     {
         $project = Project::create($request->validated());
         return $this->success(new ProjectResource($project), 'Proyek berhasil dibuat', 201);
@@ -60,7 +61,7 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project)
+    public function update(ProjectRequest $request, Project $project)
     {
         $this->authorize('update', $project);
 

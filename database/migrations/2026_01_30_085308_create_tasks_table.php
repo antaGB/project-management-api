@@ -17,7 +17,10 @@ return new class extends Migration
             $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null');
             $table->string('title');
             $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
+            $table->enum('status', ['to-do', 'in-progres', 'done'])->default('to-do');
             $table->timestamps();
+
+            $table->index('status');
         });
     }
 

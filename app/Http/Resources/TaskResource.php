@@ -18,6 +18,7 @@ class TaskResource extends JsonResource
             'id'         => $this->id,
             'title'      => $this->title,
             'priority'   => strtoupper($this->priority),
+            'status'   => strtoupper($this->status),
             // Avoid null coalescing error if assignee is empty
             'assignee'   => $this->assignee ? [
                 'id'    => $this->assignee->id,

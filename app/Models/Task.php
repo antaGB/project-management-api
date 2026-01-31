@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Task extends Model
 {
-    protected $fillable = ['project_id', 'assigned_to', 'title', 'priority'];
+    protected $fillable = ['project_id', 'assigned_to', 'title', 'priority', 'status'];
 
     public function project(): BelongsTo {
         return $this->belongsTo(Project::class);
