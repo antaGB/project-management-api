@@ -63,4 +63,49 @@ class ProjectApiTest extends TestCase
         $response->assertStatus(201);
         $this->assertDatabaseHas('projects', ['name' => 'Project Baru dari Test']);
     }
+
+     /** @test */
+    public function test_validasi_gagal_saat_input_proyek_kosong()
+    {
+        $admin = User::factory()->create();
+        $admin->roles()->create(['name' => 'admin', 'display_name' => 'Admin']);
+
+        // Mengirim data kosong ke endpoint store
+        $response = $this->actingAs($admin)
+                        ->postJson('/api/projects', []);
+
+        // Laravel otomatis mengembalikan 422 jika FormRequest gagal
+        $response->assertStatus(422);
+        
+        // Memastikan ada pesan error untuk field 'name'
+        $response->assertJsonValidationErrors(['name']);
+    }
+
+    /** @test */
+    public function test_user_tanpa_permission_tidak_bisa_update_proyek()
+    {
+        // 1. Setup: user
+        $user = User::factory()->create();
+        
+        // Beri role staff ke si user (tanpa permission edit)
+        $staffRole = Role::create(['name' => 'staff', 'display_name' => 'Staff']);
+        $user->roles()->attach($staffRole);
+
+
+        // 2. Buat proyek 
+        $project = Project::create([
+            'name' => 'Proyek Rahasia'
+        ]);
+
+        // 3. Action: Si user mencoba mengupdate proyek tersebut
+        $response = $this->actingAs($user)
+                        ->putJson("/api/projects/{$project->id}", [
+                            'name' => 'Nama Proyek Diubah Pencuri'
+                        ]);
+
+        // 4. Assert: Harus ditolak (403 Forbidden)
+        $response->assertStatus(403);
+    }
+
+
 }
