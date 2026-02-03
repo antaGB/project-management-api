@@ -58,10 +58,17 @@ class User extends Authenticatable
         return $this->hasMany(Task::class, 'assigned_to');
     }
 
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_user');
+    }
+
     public function hasPermission($permissionName): bool {
         // Cek check if any roles has the permission
         return $this->roles()->whereHas('permissions', function($query) use ($permissionName) {
             $query->where('name', $permissionName);
         })->exists();
     }
+
+
 }

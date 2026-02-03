@@ -20,7 +20,8 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'roles' => RoleResource::collection($this->whenLoaded('roles')),
             // Menampilkan jumlah task yang sedang dikerjakan user ini
-            'tasks_count' => $this->tasks_count, 
+            'projects_count' => $this->projects_count ?? 0, 
+            'tasks_count' => $this->tasks_count ?? 0, 
         ];
     }
 }

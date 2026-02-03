@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Requests\StoreUserRequest as UserRequest;
 
 class UserController extends Controller
 {
@@ -19,7 +20,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('roles')->withCount('tasks')->get();
+        $users = User::with('roles')->withCount('tasks')->withCount('projects')->get();
         return UserResource::collection($users);
     }
 
@@ -28,6 +29,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', User::class);
+
         $user = DB::transaction(function () use ($request) {
             $user = User::create([
                 'name'     => $request->name,
@@ -45,7 +48,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(UserRequest $user)
     {
         return $this->success(new UserResource($user->load(['roles', 'tasks'])), 'Data user ditemukan');
     }
@@ -53,8 +56,10 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
+        $this->authorize('edit', $user);
+
         $user->update($request->only('name', 'email'));
 
         if ($request->password) {
@@ -73,7 +78,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $this->authorize('update', $user);
+        $this->authorize('delete', $user);
 
         $user->delete();
         return $this->success(null, 'User berhasil dihapus');
