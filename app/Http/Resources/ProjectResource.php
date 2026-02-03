@@ -18,7 +18,9 @@ class ProjectResource extends JsonResource
             'id' => $this->id,
             'project_name' => $this->name,
             'info' => $this->description,
-            'tasks_count' => $this->tasks_count, // Data from withCount()
+            'members_count' => $this->members_count ?? 0, 
+            'members' => UserResource::collection($this->whenLoaded('members')),
+            'tasks_count' => $this->tasks_count ?? 0, 
             'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];

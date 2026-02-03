@@ -18,7 +18,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::withCount('tasks')->paginate(10);
+        $projects = Project::withCount(['members', 'tasks'])->forUser(auth()->user())->paginate(10);
         return ProjectResource::collection($projects);
     }
 
@@ -35,6 +35,8 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
+        $this->authorize('create', Project::class);
+
         $project = Project::create($request->validated());
         return $this->success(new ProjectResource($project), 'Proyek berhasil dibuat', 201);
     }
@@ -44,6 +46,8 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
+        $this->authorize('view', $project);
+
         return $this->success(
             new ProjectResource($project->load('tasks.assignee')), 
             'Detail proyek ditemukan'
