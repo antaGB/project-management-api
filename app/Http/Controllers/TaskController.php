@@ -6,10 +6,12 @@ use App\Models\Task;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Resources\TaskResource;
+use App\Http\Requests\StoreTaskRequest as TaskRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TaskController extends Controller
 {
-    use ApiResponse;
+    use ApiResponse, AuthorizesRequests;
 
     /**
      * Display a listing of the resource.
@@ -17,6 +19,7 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $tasks = Task::with(['assignee', 'project'])
+            ->forUser(auth()->user())
             ->when($request->project_id, function($query) use ($request) {
                 $query->where('project_id', $request->project_id);
             })
@@ -36,8 +39,10 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TaskRequest $request)
     {
+        $this->authorize('create', Task::class);
+
         $task = Task::create($request->validated());
         return $this->success(new TaskResource($task), 'Tugas berhasil ditambahkan', 201);
     }
@@ -61,8 +66,10 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task)
+    public function update(TaskRequest $request, Task $task)
     {
+        $this->authorize('update', $task);
+
         $task->update($request->validated());
         return $this->success(new TaskResource($task), 'Tugas berhasil diperbarui');
     }
@@ -72,7 +79,18 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        $this->authorize('delete', $task);
+
         $task->delete();
         return $this->success(null, 'Tugas berhasil dihapus');
+    }
+
+    public function updateStatus(Request $request, Task $task) 
+    {
+        $request->validate(['status' => 'required|in:to-do,in-progress,done']);
+        
+        $task->update(['status' => $request->status]);
+
+        return response()->json(['message' => 'Status updated!']);
     }
 }

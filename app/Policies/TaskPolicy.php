@@ -29,7 +29,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return $user->roles()->whereIn('name', ['super-admin', 'manager'])->exists();
+        return $user->hasPermission('create-task');
     }
 
     /**
@@ -37,11 +37,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        // Staff only can update if the task is assigned to them
-        if ($user->roles()->where('name', 'staff')->exists()) {
-            return $task->assigned_to === $user->id;
-        }
-        return $user->roles()->whereIn('name', ['super-admin', 'manager'])->exists();
+        return $user->hasPermission('edit-task');
     }
 
     /**
@@ -49,7 +45,7 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        return false;
+        return $user->hasPermission('delete-task');
     }
 
     /**
