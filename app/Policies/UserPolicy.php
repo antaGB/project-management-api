@@ -20,7 +20,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return false;
+        return $user->hasPermission('view-user') || $user->id === $model->id;;
     }
 
     /**
