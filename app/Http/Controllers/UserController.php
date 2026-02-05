@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Http\Requests\StoreUserRequest as UserRequest;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -20,6 +21,8 @@ class UserController extends Controller
      */
     public function index()
     {
+        $this->authorize('view');
+
         $users = User::with('roles')->withCount('tasks')->withCount('projects')->get();
         return UserResource::collection($users);
     }
@@ -27,7 +30,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
         $this->authorize('create', User::class);
 
@@ -42,21 +45,21 @@ class UserController extends Controller
             return $user;
         });
 
-        return $this->success(new UserResource($user->load('roles')), 'User berhasil dibuat', 201);
+        return $this->success(new UserResource($user->load('roles')), 'User created successfully', 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(UserRequest $user)
+    public function show(Request $user)
     {
-        return $this->success(new UserResource($user->load(['roles', 'tasks'])), 'Data user ditemukan');
+        return $this->success(new UserResource($user->load(['roles', 'tasks'])), 'User detail found');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
         $this->authorize('edit', $user);
 
@@ -70,7 +73,7 @@ class UserController extends Controller
             $user->roles()->sync($request->role_ids);
         }
 
-        return $this->success(new UserResource($user->load('roles')), 'Data user diperbarui');
+        return $this->success(new UserResource($user->load('roles')), 'User updated successfully');
     }
 
     /**
@@ -81,7 +84,7 @@ class UserController extends Controller
         $this->authorize('delete', $user);
 
         $user->delete();
-        return $this->success(null, 'User berhasil dihapus');
+        return $this->success(null, 'User deleted successfully');
     }
 
      /**
@@ -89,9 +92,11 @@ class UserController extends Controller
      */
     public function assignRole(Request $request, User $user) 
     {
+        $this->authorize('edit', $user);
+
         $request->validate(['role_ids' => 'required|array|exists:roles,id']);
 
         $user->roles()->sync($request->role_ids);
-        return $this->success($user->load('roles'), 'Role user berhasil diperbarui');
+        return $this->success($user->load('roles'), 'Users role updated successfully');
     }
 }

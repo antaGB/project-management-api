@@ -4,18 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Permission;
 use App\Traits\ApiResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use App\Http\Resources\PermissionResource;
+use App\Http\Requests\StorePermissionRequest;
+use App\Http\Requests\UpdatePermissionRequest;
 
 class PermissionController extends Controller
 {
-    use ApiResponse;
+    use ApiResponse, AuthorizesRequests;
 
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $this->authorize(ability: 'view');
+
         $permissions = Permission::all();
         return PermissionResource::collection($permissions);
     }
@@ -31,10 +36,12 @@ class PermissionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
+    public function store(StorePermissionRequest $request)
+    {   
+        $this->authorize(ability: 'store');
+
         $permission = Permission::create($request->validated());
-        return $this->success(new PermissionResource($permission), 'Permission created', 201);
+        return $this->success(new PermissionResource($permission), 'Permission created successfully', 201);
     }
 
     /**
@@ -42,7 +49,12 @@ class PermissionController extends Controller
      */
     public function show(Permission $permission)
     {
-        //
+        $this->authorize('view', $permission);
+
+        return $this->success(
+            new PermissionResource($permission->load('tasks.assignee')), 
+            'Permissions detail found'
+        );
     }
 
     /**
@@ -56,9 +68,12 @@ class PermissionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Permission $permission)
+    public function update(UpdatePermissionRequest $request, Permission $permission)
     {
-        //
+        $this->authorize('update', $permission);
+
+        $permission->update($request->validated());
+        return $this->success(new PermissionResource($permission), 'Permission updated successfully');
     }
 
     /**
@@ -66,7 +81,9 @@ class PermissionController extends Controller
      */
     public function destroy(Permission $permission)
     {
+        $this->authorize('delete', $permission);
+
         $permission->delete();
-        return $this->success(null, 'Permission deleted');
+        return $this->success(null, 'Permission deleted successfully');
     }
 }

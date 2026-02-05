@@ -4,18 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Traits\ApiResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use App\Http\Resources\RoleResource;
+use App\Http\Requests\StoreRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
 
 class RoleController extends Controller
 {
-    use ApiResponse;
+    use ApiResponse, AuthorizesRequests;
 
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $this->authorize('view');
+
         return RoleResource::collection(Role::with('permissions')->get());
     }
 
@@ -30,10 +35,12 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRoleRequest $request)
     {
+        $this->authorize('store');
+
         $role = Role::create($request->validated());
-        return $this->success(new RoleResource($role), 'Role berhasil dibuat', 201);
+        return $this->success(new RoleResource($role), 'Role created successfully', 201);
     }
 
     /**
@@ -52,7 +59,12 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
-        //
+        $this->authorize('view', $role);
+
+        return $this->success(
+            new RoleResource($role->load('tasks.assignee')), 
+            'Roles detail found'
+        );
     }
 
     /**
@@ -66,9 +78,12 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Role $role)
+    public function update(UpdateRoleRequest $request, Role $role)
     {
-        //
+        $this->authorize('update', $role);
+
+        $role->update($request->validated());
+        return $this->success(new RoleResource($role), 'Role updated successfully');
     }
 
     /**
@@ -76,6 +91,9 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
-        //
+        $this->authorize('delete', $role);
+
+        $role->delete();
+        return $this->success(null, 'Role deleted successfully');
     }
 }

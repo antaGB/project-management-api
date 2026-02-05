@@ -7,7 +7,8 @@ use App\Http\Resources\ProjectResource;
 use App\Traits\ApiResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 // use Illuminate\Http\Request;
-use App\Http\Requests\StoreProjectRequest as ProjectRequest;
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 
 class ProjectController extends Controller
 {
@@ -33,12 +34,12 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProjectRequest $request)
+    public function store(StoreProjectRequest $request)
     {
         $this->authorize('create', Project::class);
 
         $project = Project::create($request->validated());
-        return $this->success(new ProjectResource($project), 'Proyek berhasil dibuat', 201);
+        return $this->success(new ProjectResource($project), 'Project created successfully', 201);
     }
 
     /**
@@ -50,7 +51,7 @@ class ProjectController extends Controller
 
         return $this->success(
             new ProjectResource($project->load('tasks.assignee')), 
-            'Detail proyek ditemukan'
+            'Projects detail found'
         );
     }
 
@@ -65,12 +66,12 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProjectRequest $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project)
     {
         $this->authorize('update', $project);
 
         $project->update($request->validated());
-        return $this->success(new ProjectResource($project), 'Proyek berhasil diperbarui');
+        return $this->success(new ProjectResource($project), 'Project updated successfully');
     }
 
     /**
@@ -81,6 +82,6 @@ class ProjectController extends Controller
         $this->authorize('delete', $project);
 
         $project->delete();
-        return $this->success(null, 'Proyek berhasil dihapus');
+        return $this->success(null, 'Project deleted successfully');
     }
 }

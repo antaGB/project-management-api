@@ -6,8 +6,9 @@ use App\Models\Task;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Resources\TaskResource;
-use App\Http\Requests\StoreTaskRequest as TaskRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 
 class TaskController extends Controller
 {
@@ -25,7 +26,7 @@ class TaskController extends Controller
             })
             ->get();
 
-        return $this->success(TaskResource::collection($tasks), 'Daftar tugas berhasil diambil');
+        return TaskResource::collection($tasks);
     }
 
     /**
@@ -39,12 +40,12 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(TaskRequest $request)
+    public function store(StoreTaskRequest $request)
     {
         $this->authorize('create', Task::class);
 
         $task = Task::create($request->validated());
-        return $this->success(new TaskResource($task), 'Tugas berhasil ditambahkan', 201);
+        return $this->success(new TaskResource($task), 'Task created successfully', 201);
     }
 
     /**
@@ -52,7 +53,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        return $this->success(new TaskResource($task->load(['assignee', 'project'])), 'Detail tugas ditemukan');
+        return $this->success(new TaskResource($task->load(['assignee', 'project'])), 'Tasks detail found');
     }
 
     /**
@@ -66,12 +67,12 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(TaskRequest $request, Task $task)
+    public function update(UpdateTaskRequest $request, Task $task)
     {
         $this->authorize('update', $task);
 
         $task->update($request->validated());
-        return $this->success(new TaskResource($task), 'Tugas berhasil diperbarui');
+        return $this->success(new TaskResource($task), 'Task updated successfully');
     }
 
     /**
@@ -82,7 +83,7 @@ class TaskController extends Controller
         $this->authorize('delete', $task);
 
         $task->delete();
-        return $this->success(null, 'Tugas berhasil dihapus');
+        return $this->success(null, 'Task deleted successfully');
     }
 
     public function updateStatus(Request $request, Task $task) 
@@ -91,6 +92,6 @@ class TaskController extends Controller
         
         $task->update(['status' => $request->status]);
 
-        return response()->json(['message' => 'Status updated!']);
+        return response()->json(['message' => 'Status updated']);
     }
 }
