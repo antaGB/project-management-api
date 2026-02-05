@@ -22,7 +22,7 @@ class Task extends Model
 
     public function scopeForUser($query, User $user)
     {
-        if ($user->hasPermission('view-tasks')) {
+        if ($user->hasPermission('view-task')) {
             return $query;
         }
 
