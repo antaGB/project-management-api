@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUserRequest extends FormRequest
@@ -21,11 +22,18 @@ class StoreUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->route('user');
+
         return [
             'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email,' . ($this->user?->id),
-            'password' => $this->isMethod('post') ? 'required|min:8' : 'nullable|min:8',
-            'role_ids' => 'required|array|exists:roles,id',
+            'email'    => [
+                'required', 
+                'email', 
+                Rule::unique('users')->ignore($user)
+            ],
+            'password' => 'required|min:8|confirmed',
+            'role_ids' => 'required|array',
+            'role_ids.*' => 'exists:roles,id',
         ];
     }
 }
