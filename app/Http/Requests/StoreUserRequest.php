@@ -31,7 +31,7 @@ class StoreUserRequest extends FormRequest
                 'email', 
                 Rule::unique('users')->ignore($user)
             ],
-            'password' => 'required|min:8|confirmed',
+            'password' => 'required|min:8',
             'role_ids' => 'required|array',
             'role_ids.*' => 'exists:roles,id',
         ];
