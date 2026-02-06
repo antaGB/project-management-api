@@ -2,9 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,11 +18,41 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Roles
+        $adminRole = Role::create(['name' => 'super-admin', 'display_name' => 'Super Admin']);
+        $managerRole = Role::create(['name' => 'manager', 'display_name' => 'Project Manager']);
+        $staffRole = Role::create(['name' => 'staff', 'display_name' => 'Regular Staff']);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $userView = Permission::create(['name' => 'view-user']);
+        $userCreate = Permission::create(['name' => 'create-user']);
+        $userUpdate = Permission::create(['name' => 'update-user']);
+        $userDelete = Permission::create(['name' => 'delete-user']);
+
+        $adminRole->permissions()->attach($userView);
+        $adminRole->permissions()->attach($userCreate);
+        $adminRole->permissions()->attach($userUpdate);
+        $adminRole->permissions()->attach($userDelete);
+
+        // Dummy Users
+        $admin = User::create([
+            'name' => 'Super Admin',
+            'email' => 'admin@test.com',
+            'password' => Hash::make('pass123')
         ]);
+        $admin->roles()->attach($adminRole);
+
+        $manager = User::create([
+            'name' => 'Budi Manager',
+            'email' => 'manager@test.com',
+            'password' => Hash::make('pass123')
+        ]);
+        $manager->roles()->attach($managerRole);
+
+        $staff = User::create([
+            'name' => 'Siti Staff',
+            'email' => 'staff@test.com',
+            'password' => Hash::make('pass123')
+        ]);
+        $staff->roles()->attach($staffRole);
     }
 }
