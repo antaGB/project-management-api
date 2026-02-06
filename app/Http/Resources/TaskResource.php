@@ -29,6 +29,7 @@ class TaskResource extends JsonResource
                 return $this->project->name;
             }),
             'created_at'       => $this->created_at,
+            'can_edit' => $request->user()->can('update', $this),
         ];
     }
 }
