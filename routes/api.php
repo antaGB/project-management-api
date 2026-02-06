@@ -18,14 +18,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('projects', ProjectController::class);
     Route::patch('/tasks/{task}/status', [TaskController::class, 'updateStatus']);
     Route::apiResource('roles', RoleController::class);
-    Route::apiResource('users', UserController::class)->middleware('permission:manage-users');
-    Route::apiResource('permissions', PermissionController::class)->middleware('permission:manage-permissions');
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('permissions', PermissionController::class);
     
     // Assign Permission to Role
     Route::post('roles/{role}/permissions', [RoleController::class, 'givePermission']);
     
     // Assign Role to User
-    Route::post('users/{user}/assign-role', [UserController::class, 'assignRole']);
+    Route::put('users/{user}/assign-role', [UserController::class, 'assignRole']);
 
     
     
