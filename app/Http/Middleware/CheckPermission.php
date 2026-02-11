@@ -17,8 +17,8 @@ class CheckPermission
      */
     public function handle(Request $request, Closure $next, $permission): Response
     {
-        // Pastikan user sudah login dan memiliki permission tersebut
-        if (!$request->user() || !$request->user()->hasPermission($permission)) {
+        // Check if user have the permission
+        if (!$request->user()->hasPermission($permission)) {
             return $this->error('Access denied: (Permission: ' . $permission . ') needed.', 403);
         }
 
