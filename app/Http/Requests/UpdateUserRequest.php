@@ -12,7 +12,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,15 +25,15 @@ class UpdateUserRequest extends FormRequest
         $user = $this->route('user');
 
         return [
-            'name'     => 'sometimes|string|max:255',
+            'name'     => 'required|string|max:255',
             'email'    => [
-                'sometimes', 
+                'required', 
                 'email', 
-                Rule::unique('users')->ignore($user)
+                Rule::unique('users')->ignore($user->id)
             ],
-            'password' => 'sometimes|min:8',
-            'role_ids' => 'sometimes|array',
-            'role_ids.*' => 'exists:roles,id',
+            'password' => 'required|min:8',
+            'role_ids' => 'required|array',
+            'role_ids.*' => 'exists:roles,id'
         ];
     }
 }
