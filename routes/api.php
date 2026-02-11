@@ -12,20 +12,17 @@ use App\Http\Controllers\PermissionController;
 // Public Route
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::apiResource('tasks', TaskController::class);
 // Protected Routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('projects', ProjectController::class);
+    Route::apiResource('tasks', TaskController::class);
     Route::patch('/tasks/{task}/status', [TaskController::class, 'updateStatus']);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('permissions', PermissionController::class);
     
-    // Assign Permission to Role
-    Route::post('roles/{role}/permissions', [RoleController::class, 'givePermission']);
-    
     // Assign Role to User
-    Route::put('users/{user}/assign-role', [UserController::class, 'assignRole']);
+    Route::patch('users/{user}/assign-role', [UserController::class, 'assignRole']);
 
     
     
