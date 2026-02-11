@@ -56,6 +56,420 @@
                 }
             }
         },
+        "/api/permissions": {
+            "get": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Get all permissions",
+                "operationId": "27bb1606a7b293d1d49f57bb94ae71f7",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Create a new permission",
+                "operationId": "37c918c86b5085b0eb088fa760c7175d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "permission-name"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Permission description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Permission created"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/permissions/{permission}": {
+            "get": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Get a permission",
+                "operationId": "3c685d62beddc92aa2835c6bddf88062",
+                "parameters": [
+                    {
+                        "name": "permission",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Permission not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Update an existing permission",
+                "operationId": "9da39ad27b95a4fcd511338ae40d2d5f",
+                "parameters": [
+                    {
+                        "name": "permission",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "permission-name"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Permission description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Permission updated"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "permission not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Delete a permission",
+                "operationId": "369a6c6cc40709118bff9bfcf22ccf5b",
+                "parameters": [
+                    {
+                        "name": "permission",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Permission deleted"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Permission not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/projects": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get all roles",
+                "operationId": "8d4a13ef3fc773ff4031e515460919ea",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Create a new project",
+                "operationId": "a4dd4c17bf5fc24c224357f03dcc848a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Project A"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Project description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Project created"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/projects/{project}": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get a project",
+                "operationId": "1352e06e55f6ab10d3702509cd385918",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Project not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Update an existing project",
+                "operationId": "a93b65e3037bfd5ea5cdc1b3dd11ba53",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Project A"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Project description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Project updated"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Project not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Delete a project",
+                "operationId": "63c289a907902132dd95dd7ecb50143f",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Project deleted"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Project not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/roles": {
             "get": {
                 "tags": [
@@ -156,7 +570,7 @@
                         "description": "Forbidden"
                     },
                     "404": {
-                        "description": "User not found"
+                        "description": "Role not found"
                     }
                 },
                 "security": [
@@ -164,15 +578,13 @@
                         "sanctum": []
                     }
                 ]
-            }
-        },
-        "/api/tasks/{role}": {
+            },
             "put": {
                 "tags": [
-                    "Tasks"
+                    "Roles"
                 ],
-                "summary": "Update an existing task",
-                "operationId": "a2e89e5153a93230c7f7600d6c401c94",
+                "summary": "Update an existing role",
+                "operationId": "1509723c88cb1e49be3ecc047204f64a",
                 "parameters": [
                     {
                         "name": "role",
@@ -189,47 +601,17 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "project_id",
-                                    "assigned_to",
-                                    "title",
-                                    "description",
-                                    "priority",
-                                    "status"
+                                    "name",
+                                    "display_name"
                                 ],
                                 "properties": {
-                                    "project_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "assigned_to": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "title": {
+                                    "name": {
                                         "type": "string",
-                                        "example": "Task 1"
+                                        "example": "admin"
                                     },
-                                    "description": {
+                                    "display_name": {
                                         "type": "string",
-                                        "example": "Lorem ipsum dolor sit amet"
-                                    },
-                                    "priority": {
-                                        "type": "string",
-                                        "enum": [
-                                            "low",
-                                            "medium",
-                                            "high"
-                                        ],
-                                        "example": "low"
-                                    },
-                                    "status": {
-                                        "type": "string",
-                                        "enum": [
-                                            "to-do",
-                                            "in-progress",
-                                            "done"
-                                        ],
-                                        "example": "to-do"
+                                        "example": "Administrator"
                                     }
                                 },
                                 "type": "object"
@@ -239,7 +621,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Task updated"
+                        "description": "Role updated"
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -248,7 +630,7 @@
                         "description": "Forbidden"
                     },
                     "404": {
-                        "description": "User not found"
+                        "description": "Role not found"
                     },
                     "422": {
                         "description": "Validation error"
@@ -262,10 +644,10 @@
             },
             "delete": {
                 "tags": [
-                    "Tasks"
+                    "Roles"
                 ],
-                "summary": "Delete a task",
-                "operationId": "994669682a9789385f864cb9e600c89a",
+                "summary": "Delete a role",
+                "operationId": "b96c05ea55ef4e3d29464b1b62c469aa",
                 "parameters": [
                     {
                         "name": "role",
@@ -278,7 +660,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "Task deleted"
+                        "description": "Role deleted"
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -287,7 +669,7 @@
                         "description": "Forbidden"
                     },
                     "404": {
-                        "description": "Task not found"
+                        "description": "Role not found"
                     }
                 },
                 "security": [
@@ -950,6 +1332,14 @@
         }
     },
     "tags": [
+        {
+            "name": "Permissions",
+            "description": "Permissions related API"
+        },
+        {
+            "name": "Projects",
+            "description": "Projects related API"
+        },
         {
             "name": "Roles",
             "description": "Roles related API"
