@@ -37,7 +37,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        return $user->hasPermission('edit-task') || $task->assignee->contains($user);
+        return $user->hasPermission('update-task') || $task->assignee->contains($user);
     }
 
     /**
