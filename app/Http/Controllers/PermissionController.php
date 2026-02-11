@@ -9,14 +9,23 @@ use Illuminate\Http\Request;
 use App\Http\Resources\PermissionResource;
 use App\Http\Requests\StorePermissionRequest;
 use App\Http\Requests\UpdatePermissionRequest;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(name: "Permissions", description: "Permissions related API")]
 class PermissionController extends Controller
 {
     use ApiResponse, AuthorizesRequests;
 
-    /**
-     * Display a listing of the resource.
-     */
+    #[OA\Get(
+        path: '/api/permissions',
+        summary: 'Get all permissions',
+        tags: ['Permissions'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Success'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function index()
     {
         $this->authorize(ability: 'view');
@@ -25,17 +34,28 @@ class PermissionController extends Controller
         return PermissionResource::collection($permissions);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    #[OA\Post(
+        path: '/api/permissions',
+        summary: 'Create a new permission',
+        tags: ['Permissions'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'permission-name'),
+                    new OA\Property(property: 'description', type: 'string', example: 'Permission description'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Permission created'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
     public function store(StorePermissionRequest $request)
     {   
         $this->authorize(ability: 'store');
@@ -44,30 +64,57 @@ class PermissionController extends Controller
         return $this->success(new PermissionResource($permission), 'Permission created successfully', 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    #[OA\Get(
+        path: '/api/permissions/{permission}',
+        summary: 'Get a permission',
+        tags: ['Permissions'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'permission', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Success'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 404, description: 'Permission not found')
+        ]
+    )]
     public function show(Permission $permission)
     {
         $this->authorize('view', $permission);
 
         return $this->success(
-            new PermissionResource($permission->load('tasks.assignee')), 
+            new PermissionResource($permission), 
             'Permissions detail found'
         );
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Permission $permission)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
+    #[OA\Put(
+        path: '/api/permissions/{permission}',
+        summary: 'Update an existing permission',
+        tags: ['Permissions'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'permission', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'permission-name'),
+                    new OA\Property(property: 'description', type: 'string', example: 'Permission description'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Permission updated'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 404, description: 'permission not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
     public function update(UpdatePermissionRequest $request, Permission $permission)
     {
         $this->authorize('update', $permission);
@@ -76,9 +123,21 @@ class PermissionController extends Controller
         return $this->success(new PermissionResource($permission), 'Permission updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    #[OA\Delete(
+        path: '/api/permissions/{permission}',
+        summary: 'Delete a permission',
+        tags: ['Permissions'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'permission', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 204, description: 'Permission deleted'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 404, description: 'Permission not found')
+        ]
+    )]
     public function destroy(Permission $permission)
     {
         $this->authorize('delete', $permission);

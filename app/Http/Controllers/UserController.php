@@ -80,12 +80,12 @@ class UserController extends Controller
     }
 
     #[OA\Get(
-        path: '/api/users/{id}',
-        summary: 'Delete a user',
+        path: '/api/users/{user}',
+        summary: 'Get a user',
         tags: ['Users'],
         security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+            new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
         ],
         responses: [
             new OA\Response(response: 200, description: 'Success'),
@@ -94,18 +94,18 @@ class UserController extends Controller
             new OA\Response(response: 404, description: 'User not found')
         ]
     )]
-    public function show(Request $user)
+    public function show(User $user)
     {
         return $this->success(new UserResource($user->load(['roles', 'tasks'])), 'User detail found');
     }
 
     #[OA\Put(
-        path: '/api/users/{id}',
+        path: '/api/users/{user}',
         summary: 'Update an existing user',
         tags: ['Users'],
         security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+            new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
         ],
         requestBody: new OA\RequestBody(
             required: true,
@@ -114,7 +114,7 @@ class UserController extends Controller
                 properties: [
                     new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
                     new OA\Property(property: 'email', type: 'string', example: 'john@example.com'),
-                    new OA\Property(property: 'password', type: 'string', example: 'pass123'),
+                    new OA\Property(property: 'password', type: 'string', example: '123456789'),
                     new OA\Property(property: 'role_ids', type: 'array', items: new OA\Items(type: 'integer'), example: [1])
                 ]
             )
@@ -145,12 +145,12 @@ class UserController extends Controller
     }
 
     #[OA\Delete(
-        path: '/api/users/{id}',
+        path: '/api/users/{user}',
         summary: 'Delete a user',
         tags: ['Users'],
         security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+            new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
         ],
         responses: [
             new OA\Response(response: 204, description: 'User deleted'),
@@ -167,18 +167,31 @@ class UserController extends Controller
         return $this->success(null, 'User deleted successfully');
     }
 
-     #[OA\Put(
-        path: 'users/{user}/assign-role',
+    #[OA\Patch(
+        path: '/api/users/{user}/assign-role',
         summary: 'Update users role',
         tags: ['Users'],
         security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'user',
+                in: 'path',
+                description: 'The ID of the user',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 required: ['role_ids'],
                 properties: [
-
-                    new OA\Property(property: 'role_ids', type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+                    new OA\Property(
+                        property: 'role_ids', 
+                        type: 'array', 
+                        items: new OA\Items(type: 'integer'), 
+                        example: [1, 2]
+                    )
                 ]
             )
         ),

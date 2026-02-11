@@ -9,31 +9,51 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 // use Illuminate\Http\Request;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(name: "Projects", description: "Projects related API")]
 class ProjectController extends Controller
 {
     use ApiResponse, AuthorizesRequests;
 
-    /**
-     * Display a listing of the resource.
-     */
+    #[OA\Get(
+        path: '/api/projects',
+        summary: 'Get all roles',
+        tags: ['Projects'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Success'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function index()
     {
-        $projects = Project::withCount(['members', 'tasks'])->forUser(auth()->user())->paginate(10);
+        $projects = Project::with('members', 'tasks')->withCount(['members', 'tasks'])->forUser(auth()->user())->paginate(10);
         return ProjectResource::collection($projects);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    #[OA\Post(
+        path: '/api/projects',
+        summary: 'Create a new project',
+        tags: ['Projects'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'Project A'),
+                    new OA\Property(property: 'description', type: 'string', example: 'Project description'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Project created'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
     public function store(StoreProjectRequest $request)
     {
         $this->authorize('create', Project::class);
@@ -42,30 +62,57 @@ class ProjectController extends Controller
         return $this->success(new ProjectResource($project), 'Project created successfully', 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    #[OA\Get(
+        path: '/api/projects/{project}',
+        summary: 'Get a project',
+        tags: ['Projects'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Success'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 404, description: 'Project not found')
+        ]
+    )]
     public function show(Project $project)
     {
         $this->authorize('view', $project);
 
         return $this->success(
-            new ProjectResource($project->load('tasks.assignee')), 
+            new ProjectResource($project->load('members', 'tasks')->withCount(['members', 'tasks'])), 
             'Projects detail found'
         );
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Project $project)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
+    #[OA\Put(
+        path: '/api/projects/{project}',
+        summary: 'Update an existing project',
+        tags: ['Projects'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'Project A'),
+                    new OA\Property(property: 'description', type: 'string', example: 'Project description'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Project updated'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 404, description: 'Project not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $this->authorize('update', $project);
@@ -74,9 +121,21 @@ class ProjectController extends Controller
         return $this->success(new ProjectResource($project), 'Project updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    #[OA\Delete(
+        path: '/api/projects/{project}',
+        summary: 'Delete a project',
+        tags: ['Projects'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 204, description: 'Project deleted'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 404, description: 'Project not found')
+        ]
+    )]
     public function destroy(Project $project)
     {
         $this->authorize('delete', $project);
