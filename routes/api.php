@@ -11,6 +11,7 @@ use App\Http\Controllers\PermissionController;
 
 // Public Route
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 // Protected Routes
 Route::middleware('auth:sanctum')->group(function () {

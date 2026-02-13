@@ -44,7 +44,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->with(['roles.permissions'])->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return $this->error('Invalid credentials', 401);
@@ -57,5 +57,24 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'user' => $user
         ], 'Login successfuly');
+    }
+
+    #[OA\Post(
+        path: '/api/logout',
+        summary: 'Unauthorize user and delete token',
+        tags: ['Auth'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response( response: 200, description: 'Success')
+        ]
+    )]
+    public function logout(Request $request) {
+        if (!$request->user()) {
+            return response()->json(['message' => 'Already logged out'], 200);
+        }
+
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Logged out successfully']);
     }
 }
